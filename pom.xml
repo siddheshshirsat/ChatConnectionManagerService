@@ -11,7 +11,7 @@
 	<repositories>
 		<repository>
 			<id>localrepository</id>
-			<url>file:///Users/shirsats/code/testWorkspace/repo/ChatConnectionManagerServiceModel</url>
+			<url>file://${project.basedir}/../repo/</url>
 		</repository>
 	</repositories>
 
@@ -77,6 +77,12 @@
 		<dependency>
 			<groupId>com.chat</groupId>
 			<artifactId>ChatConnectionManagerServiceModel</artifactId>
+			<version>0.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.chat</groupId>
+			<artifactId>ChatPushNotificationServiceModel</artifactId>
 			<version>0.1.0</version>
 		</dependency>
 

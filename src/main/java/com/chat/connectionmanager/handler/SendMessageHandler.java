@@ -15,9 +15,9 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.util.EntityUtils;
 
 import com.chat.connectionmanager.model.Message;
-import com.chat.connectionmanager.model.SendMessageRequest;
-import com.chat.connectionmanager.model.SendMessageResponse;
 import com.chat.connectionmanager.model.ServerDetails;
+import com.chat.pushnotification.model.DeliverMessageRequest;
+import com.chat.pushnotification.model.DeliverMessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SendMessageHandler {
@@ -36,14 +36,14 @@ public class SendMessageHandler {
 		ServerDetails serverDetails = activeConnections.get(message.getRecipientId());
 
 		if(serverDetails != null) {
-			SendMessageRequest sendMessageRequest = new SendMessageRequest(message);
+			DeliverMessageRequest deliverMessageRequest = new DeliverMessageRequest(message.getSenderId(), message.getRecipientId(), message.getContent(), message.getTimestamp());
 			HttpPost post = new HttpPost(serverDetails.getUrl() + SEND_MESSAGE_API);
 
-			post.setEntity(new StringEntity(objectMapper.writeValueAsString(sendMessageRequest), ContentType.APPLICATION_JSON));
+			post.setEntity(new StringEntity(objectMapper.writeValueAsString(deliverMessageRequest), ContentType.APPLICATION_JSON));
 
 			HttpResponse response = httpClient.execute(post);
-			SendMessageResponse sendMessageResponse =  objectMapper.readValue(EntityUtils.toString(response.getEntity()), SendMessageResponse.class);
-			return sendMessageResponse.isDelivered();
+			DeliverMessageResponse deliverMessageResponse =  objectMapper.readValue(EntityUtils.toString(response.getEntity()), DeliverMessageResponse.class);
+			return deliverMessageResponse.isDelivered();
 		}
 		return false;
 	}

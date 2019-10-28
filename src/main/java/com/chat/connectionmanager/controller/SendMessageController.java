@@ -20,7 +20,7 @@ public class SendMessageController {
 	public @ResponseBody SendMessageResponse sendMessage(@RequestBody SendMessageRequest sendMessageRequest) {
 		boolean isDelivered = false;
 		try {
-			isDelivered = sendMessageHandler.sendMessage(sendMessageRequest.getMessage());
+			isDelivered = sendMessageHandler.handleSendMessage(sendMessageRequest.getMessage());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

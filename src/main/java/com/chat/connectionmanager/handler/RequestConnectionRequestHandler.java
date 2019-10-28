@@ -7,14 +7,14 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConnectionRequestHandler {
+public class RequestConnectionRequestHandler {
 	@Inject
 	private ConnectionLoadManager connectionLoadManager;
 	
-	public Optional<String> handleConnectionRequest(String userId) {
+	public Optional<String> handleRequestConnection(String userId) {
 		if(userId == null || userId.length() == 0 ) {
 			throw new IllegalArgumentException();
 		}
-		return connectionLoadManager.getUrl(userId);
+		return connectionLoadManager.getUrl(userId).map(s -> s.replace("http", "ws"));
 	}
 }

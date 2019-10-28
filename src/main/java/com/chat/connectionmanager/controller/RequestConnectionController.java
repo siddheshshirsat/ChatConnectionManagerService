@@ -9,22 +9,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.chat.connectionmanager.handler.ConnectionRequestHandler;
-import com.chat.connectionmanager.model.ConnectionRequest;
-import com.chat.connectionmanager.model.ConnectionResponse;
+import com.chat.connectionmanager.handler.RequestConnectionRequestHandler;
 import com.chat.connectionmanager.model.GrantStatus;
+import com.chat.connectionmanager.model.RequestConnectionRequest;
+import com.chat.connectionmanager.model.RequestConnectionResponse;
 
 @RestController
 public class RequestConnectionController {
 	@Inject
-	private ConnectionRequestHandler connecitonRequestHandler;
+	private RequestConnectionRequestHandler requestConnectionRequestHandler;
 
 	@RequestMapping("/requestConnection")
-	public @ResponseBody ConnectionResponse requestConnection(@RequestBody ConnectionRequest connectionRequest) {
-		Optional<String> connectionHandlerResponse = connecitonRequestHandler
-				.handleConnectionRequest(connectionRequest.getUserId());
+	public @ResponseBody RequestConnectionResponse requestConnection(@RequestBody RequestConnectionRequest requestConnectionRequest) {
+		Optional<String> requestConnectionHandlerResponse = requestConnectionRequestHandler.handleRequestConnection(requestConnectionRequest.getUserId());
 
-		return connectionHandlerResponse.map(r -> new ConnectionResponse(GrantStatus.GRANTED, r))
-										.orElse(new ConnectionResponse(GrantStatus.DENIED, ""));
+		return requestConnectionHandlerResponse.map(r -> new RequestConnectionResponse(GrantStatus.GRANTED, r))
+				.orElse(new RequestConnectionResponse(GrantStatus.DENIED, ""));
 	}
 }

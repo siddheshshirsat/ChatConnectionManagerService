@@ -41,13 +41,10 @@ public class ConnectionLoadManager {
 
 	@PostConstruct
 	private void postConstruct() {
-		addServerOnRing(new ServerDetails("serverId1", "ws://localhost:9001"));
+		addServerOnRing(new ServerDetails("serverId1", "http://localhost:9001"));
 	}
 
 	private Optional<ServerDetails> getNearestServerOnRing(int requestHashValue) {
-		System.out.println("Reached...requestHashValue = " + requestHashValue);
-		System.out.println("Reached...conistentHashingRing = " + conistentHashingRing);
-
 		Map.Entry<Integer, ServerDetails> resultServerDetails = conistentHashingRing.higherEntry(requestHashValue);
 		if(resultServerDetails == null) {
 			resultServerDetails = conistentHashingRing.lowerEntry(requestHashValue);

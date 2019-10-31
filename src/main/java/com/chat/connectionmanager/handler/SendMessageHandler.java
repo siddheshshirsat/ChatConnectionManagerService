@@ -17,9 +17,9 @@ import org.springframework.stereotype.Component;
 
 import com.chat.connectionmanager.model.Message;
 import com.chat.connectionmanager.model.ServerDetails;
+import com.chat.connectionmanager.state.ActiveConnections;
 import com.chat.pushnotification.model.DeliverMessageRequest;
 import com.chat.pushnotification.model.DeliverMessageResponse;
-import com.chat.connectionmanager.state.ActiveConnections;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
@@ -36,10 +36,11 @@ public class SendMessageHandler {
 	private HttpClient httpClient;
 
 	public boolean handleSendMessage(Message message) throws UnsupportedCharsetException, ClientProtocolException, IOException {
-		System.out.println("Reached...mesage = " + message);
 		Optional<ServerDetails> serverDetailsOptional = activeConnections.get(message.getRecipientId());
-		
+		System.out.println("Reached1...sending message " + serverDetailsOptional + ", " + message + ", " + activeConnections);
+
 		if(serverDetailsOptional.isPresent()) {
+			System.out.println("Reached...sending message " + serverDetailsOptional + ", " + message);
 			return sendMessage(serverDetailsOptional.get(), message);
 		} else {
 			return false;
@@ -47,13 +48,13 @@ public class SendMessageHandler {
 	}
 
 	private boolean sendMessage(ServerDetails serverDetails, Message message) throws ClientProtocolException, IOException {
-		SendMessageRequest sendMessageRequest = new SendMessageRequest(message);
+		DeliverMessageRequest deliverMessageRequest = new DeliverMessageRequest(message.getSenderId(), message.getRecipientId(), message.getContent(), message.getTimestamp());
 		HttpPost post = new HttpPost(serverDetails.getUrl() + DELIVER_MESSAGE_API);
 
-		post.setEntity(new StringEntity(objectMapper.writeValueAsString(sendMessageRequest), ContentType.APPLICATION_JSON));
+		post.setEntity(new StringEntity(objectMapper.writeValueAsString(deliverMessageRequest), ContentType.APPLICATION_JSON));
 
 		HttpResponse response = httpClient.execute(post);
-		SendMessageResponse sendMessageResponse =  objectMapper.readValue(EntityUtils.toString(response.getEntity()), SendMessageResponse.class);
-		return sendMessageResponse.isDelivered();
+		DeliverMessageResponse deliverMessageResponse =  objectMapper.readValue(EntityUtils.toString(response.getEntity()), DeliverMessageResponse.class);
+		return deliverMessageResponse.isDelivered();
 	}
 }

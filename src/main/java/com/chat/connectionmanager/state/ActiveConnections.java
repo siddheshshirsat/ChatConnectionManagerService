@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component;
 
 import com.chat.connectionmanager.model.ServerDetails;
 
+import lombok.ToString;
+
 @Component
+@ToString
 public class ActiveConnections {
 	private Map<String, ServerDetails> activeConnectionsMap;
 

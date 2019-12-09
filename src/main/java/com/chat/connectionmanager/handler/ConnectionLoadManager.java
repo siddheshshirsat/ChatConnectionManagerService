@@ -29,9 +29,9 @@ public class ConnectionLoadManager {
 	@Inject
 	private TreeMap<Integer, ServerDetails> conistentHashingRing;
 
-	public Optional<String> getUrl(String userId) {
+	public Optional<ServerDetails> getServerDetails(String userId) {
 		Integer requestHashValue = requestHashFunction.apply(userId);
-		return getNearestServerOnRing(requestHashValue % RING_LENGTH).map(ServerDetails::getUrl);
+		return getNearestServerOnRing(requestHashValue % RING_LENGTH);
 	}
 
 	public void addServerOnRing(ServerDetails serverDetails) {
@@ -41,7 +41,7 @@ public class ConnectionLoadManager {
 
 	@PostConstruct
 	private void postConstruct() {
-		addServerOnRing(new ServerDetails("serverId1", "http://localhost:9001"));
+		addServerOnRing(new ServerDetails("serverId1", "localhost:9001"));
 	}
 
 	private Optional<ServerDetails> getNearestServerOnRing(int requestHashValue) {

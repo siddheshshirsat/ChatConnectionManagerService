@@ -16,6 +16,8 @@ import com.chat.connectionmanager.model.RequestConnectionResponse;
 
 @RestController
 public class RequestConnectionController {
+	private static final String WS_SCHEME = "ws";
+
 	@Inject
 	private RequestConnectionRequestHandler requestConnectionRequestHandler;
 
@@ -23,7 +25,7 @@ public class RequestConnectionController {
 	public @ResponseBody RequestConnectionResponse requestConnection(@RequestBody RequestConnectionRequest requestConnectionRequest) {
 		Optional<String> requestConnectionHandlerResponse = requestConnectionRequestHandler.handleRequestConnection(requestConnectionRequest.getUserId());
 
-		return requestConnectionHandlerResponse.map(r -> new RequestConnectionResponse(GrantStatus.GRANTED, r))
-				.orElse(new RequestConnectionResponse(GrantStatus.DENIED, ""));
+		return requestConnectionHandlerResponse.map(r -> new RequestConnectionResponse(GrantStatus.GRANTED, WS_SCHEME, r))
+				.orElse(new RequestConnectionResponse(GrantStatus.DENIED, "", ""));
 	}
 }

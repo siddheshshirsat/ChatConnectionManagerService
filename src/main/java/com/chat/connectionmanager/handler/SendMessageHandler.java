@@ -17,27 +17,27 @@ import org.springframework.stereotype.Component;
 
 import com.chat.connectionmanager.model.Message;
 import com.chat.connectionmanager.model.ServerDetails;
-import com.chat.connectionmanager.state.ActiveConnections;
 import com.chat.pushnotification.model.DeliverMessageRequest;
 import com.chat.pushnotification.model.DeliverMessageResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
 public class SendMessageHandler {
+	private static final String DELIVER_MESSAGE_SCHEME = "http://";
 	private static final String DELIVER_MESSAGE_API = "/deliverMessage";
 
 	@Inject
 	private ObjectMapper objectMapper;
 
 	@Inject
-	private ActiveConnections activeConnections;
+	private ConnectionLoadManager connectionLoadManager;
 
 	@Inject
 	private HttpClient httpClient;
 
 	public boolean handleSendMessage(Message message) throws UnsupportedCharsetException, ClientProtocolException, IOException {
-		Optional<ServerDetails> serverDetailsOptional = activeConnections.get(message.getRecipientId());
-		System.out.println("Reached1...sending message " + serverDetailsOptional + ", " + message + ", " + activeConnections);
+		Optional<ServerDetails> serverDetailsOptional = connectionLoadManager.getServerDetails(message.getRecipientId());
+		System.out.println("Reached1...recipient server details" + serverDetailsOptional + ", " + message);
 
 		if(serverDetailsOptional.isPresent()) {
 			System.out.println("Reached...sending message " + serverDetailsOptional + ", " + message);
@@ -49,7 +49,7 @@ public class SendMessageHandler {
 
 	private boolean sendMessage(ServerDetails serverDetails, Message message) throws ClientProtocolException, IOException {
 		DeliverMessageRequest deliverMessageRequest = new DeliverMessageRequest(message.getSenderId(), message.getRecipientId(), message.getContent(), message.getTimestamp());
-		HttpPost post = new HttpPost(serverDetails.getUrl() + DELIVER_MESSAGE_API);
+		HttpPost post = new HttpPost(DELIVER_MESSAGE_SCHEME + serverDetails.getEndpoint() + DELIVER_MESSAGE_API);
 
 		post.setEntity(new StringEntity(objectMapper.writeValueAsString(deliverMessageRequest), ContentType.APPLICATION_JSON));
 

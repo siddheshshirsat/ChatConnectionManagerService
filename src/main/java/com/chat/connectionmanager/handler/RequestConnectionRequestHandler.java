@@ -6,6 +6,8 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
 
+import com.chat.connectionmanager.model.ServerDetails;
+
 @Component
 public class RequestConnectionRequestHandler {
 	@Inject
@@ -15,6 +17,7 @@ public class RequestConnectionRequestHandler {
 		if(userId == null || userId.length() == 0 ) {
 			throw new IllegalArgumentException();
 		}
-		return connectionLoadManager.getUrl(userId).map(s -> s.replace("http", "ws"));
+		return connectionLoadManager.getServerDetails(userId)
+									.map(ServerDetails::getEndpoint);
 	}
 }
